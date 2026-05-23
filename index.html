@@ -50,11 +50,11 @@
             }
         }
 
-        /* --- BOTÓN DE MÚSICA FLOTANTE --- */
+        /* --- BOTÓN DE MÚSICA FLOTANTE SIEMPRE VISIBLE --- */
         .music-btn {
-            position: absolute;
+            position: fixed; 
             top: 20px;
-            right: 20px;
+            left: calc(50% + 150px); 
             z-index: 100;
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(4px);
@@ -67,8 +67,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, background 0.3s ease, left 0.3s ease;
+        }
+
+        @media (max-width: 450px) {
+            .music-btn {
+                left: auto;
+                right: 20px; 
+            }
+        }
+
+        @media (min-height: 850px) and (min-width: 450px) {
+            .music-btn {
+                top: calc(50% - 405px); 
+            }
         }
 
         .music-btn:hover {
@@ -83,7 +96,6 @@
             transition: fill 0.3s ease;
         }
 
-        /* Cambio de color estético cuando la música está pausada o en zona blanca */
         .music-btn.black-style {
             background: rgba(59, 34, 25, 0.15);
             border: 1px solid rgba(59, 34, 25, 0.2);
@@ -98,14 +110,14 @@
             height: 100vh; 
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Alinea todo perfectamente al centro vertical */
+            justify-content: center; 
             align-items: center;
             padding: 40px 24px;
             text-align: center;
             color: #ffffff;
             background-color: #3b2219;
             flex-shrink: 0; 
-            gap: 30px; /* Distribución de espacio uniforme entre elementos */
+            gap: 30px; 
         }
 
         .text-top {
@@ -156,18 +168,18 @@
         /* --- VISTA 2: CONTENIDO PRINCIPAL --- */
         .section-content {
             width: 100%;
-            height: 100vh; /* Se mantiene pantalla completa limpia */
+            height: 100vh; 
             background-color: #ffffff;
             flex-shrink: 0;
             display: flex;
             flex-direction: column; 
         }
 
-        /* Contenedor del Carrusel (Alineado al tope superior sin huecos) */
+        /* Contenedor del Carrusel */
         .carousel-container {
             position: relative;
             width: 100%;
-            flex: 1; /* Absorbe todo el espacio superior hasta la franja café */
+            flex: 1; 
             background-color: #eaeaea;
             overflow: hidden;
         }
@@ -181,6 +193,7 @@
             object-fit: cover; 
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
+            cursor: zoom-in; /* Indica visualmente que la foto se puede ampliar */
         }
 
         .carousel-slide.active {
@@ -244,7 +257,7 @@
             margin-top: 25px;
         }
 
-        /* Altura elástica y colchón de seguridad al fondo para las iniciales */
+        /* Altura elástica para las iniciales */
         .details-banner {
             width: 100%;
             flex: 0 0 auto; 
@@ -279,22 +292,78 @@
             object-fit: contain;
             display: block;
         }
+
+        /* --- NUEVO CSS: CAPA MODAL PARA VER FOTOS EN GRANDE --- */
+        .lightbox-modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 200; /* Por encima de todo */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Fondo oscuro elegante */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            object-fit: contain;
+        }
+
+        .lightbox-modal.show .lightbox-img {
+            transform: scale(1);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 300;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s ease;
+        }
+
+        .lightbox-close:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
 
     <audio id="bg-music" src="musica/cancion.mp3" loop></audio>
 
-    <div class="mobile-container" id="scroll-box">
+    <button class="music-btn" id="music-control" onclick="toggleMusic()" title="Reproducir/Pausar música">
+        <svg id="icon-playing" viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        <svg id="icon-muted" viewBox="0 0 24 24" style="display: none;">
+            <path d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l4 4L19.73 21 21 19.73 4.27 3zM14 7h4V3h-6v5.18l2 2V7z"/>
+        </svg>
+    </button>
 
-        <button class="music-btn" id="music-control" onclick="toggleMusic()" title="Reproducir/Pausar música">
-            <svg id="icon-playing" viewBox="0 0 24 24">
-                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-            </svg>
-            <svg id="icon-muted" viewBox="0 0 24 24" style="display: none;">
-                <path d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l4 4L19.73 21 21 19.73 4.27 3zM14 7h4V3h-6v5.18l2 2V7z"/>
-            </svg>
-        </button>
+    <div class="lightbox-modal" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-img" id="lightbox-img" src="" alt="Imagen ampliada">
+    </div>
+
+    <div class="mobile-container" id="scroll-box">
 
         <div class="section-envelope">
             <div>
@@ -312,10 +381,10 @@
         <div class="section-content" id="invitation-details">
             
             <div class="carousel-container">
-                <button class="carousel-btn btn-prev" onclick="changeSlide(-1)">&#10094;</button>
-                <img src="imagenes/foto1.jpeg" alt="Foto 1" class="carousel-slide active">
-                <img src="imagenes/foto2.jpeg" alt="Foto 2" class="carousel-slide">
-                <button class="carousel-btn btn-next" onclick="changeSlide(1)">&#10095;</button>
+                <button class="carousel-btn btn-prev" onclick="changeSlide(-1); event.stopPropagation();">&#10094;</button>
+                <img src="imagenes/foto1.jpeg" alt="Foto 1" class="carousel-slide active" onclick="openLightbox(this.src)">
+                <img src="imagenes/foto2.jpeg" alt="Foto 2" class="carousel-slide" onclick="openLightbox(this.src)">
+                <button class="carousel-btn btn-next" onclick="changeSlide(1); event.stopPropagation();">&#10095;</button>
             </div>
 
             <div class="date-banner">
@@ -345,7 +414,7 @@
         const iconMuted = document.getElementById('icon-muted');
         const scrollBox = document.getElementById('scroll-box');
 
-        // Forzar el scroll hasta el límite físico inferior del contenedor móvil e iniciar música
+        // Forzar scroll e iniciar música
         function scrollToContent() {
             if (scrollBox) {
                 scrollBox.scrollTo({
@@ -353,22 +422,18 @@
                     behavior: 'smooth'
                 });
             }
-            
-            // Iniciar la reproducción musical al interactuar al abrir el sobre
             playAudio();
         }
 
-        // Función para dar play al audio de manera segura
         function playAudio() {
             audio.play().then(() => {
                 iconPlaying.style.display = 'block';
                 iconMuted.style.display = 'none';
             }).catch(error => {
-                console.log("El navegador bloqueó el autoplay inicialmente hasta una interacción completa.");
+                console.log("Interacción requerida para audio.");
             });
         }
 
-        // Función manual para el botón de pausar / mutear
         function toggleMusic() {
             if (audio.paused) {
                 audio.play();
@@ -381,14 +446,13 @@
             }
         }
 
-        // Cambiar estilo visual del botón flotante según la sección del scroll
+        // Detecta el desplazamiento para cambiar el color del botón
         if (scrollBox) {
             scrollBox.addEventListener('scroll', () => {
-                // Si el scroll baja más allá de la mitad de la pantalla 1, cambia de estilo para contrastar con el fondo blanco
                 if (scrollBox.scrollTop > (window.innerHeight / 2)) {
-                    musicBtn.classList.add('black-style');
+                    musicBtn.classList.add('black-style'); 
                 } else {
-                    musicBtn.classList.remove('black-style');
+                    musicBtn.classList.remove('black-style'); 
                 }
             });
         }
@@ -410,10 +474,22 @@
             slides[currentIdx].classList.add('active');
         }
 
-        // Cambio automático cada 4 segundos
         setInterval(() => {
             changeSlide(1);
         }, 4000);
+
+        // --- NUEVA LÓGICA DE JAVASCRIPT PARA EL LIGHTBOX ---
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function openLightbox(imageSrc) {
+            lightboxImg.src = imageSrc;
+            lightbox.classList.add('show');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('show');
+        }
     </script>
 </body>
 </html>
