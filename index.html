@@ -182,6 +182,7 @@
             flex: 1; 
             background-color: #eaeaea;
             overflow: hidden;
+            cursor: zoom-in; /* El contenedor entero avisa que es ampliable */
         }
 
         .carousel-slide {
@@ -193,7 +194,7 @@
             object-fit: cover; 
             opacity: 0;
             transition: opacity 0.8s ease-in-out;
-            cursor: zoom-in; /* Indica visualmente que la foto se puede ampliar */
+            pointer-events: none; /* Evita que las imágenes bloqueen los clics del carrusel */
         }
 
         .carousel-slide.active {
@@ -217,6 +218,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            pointer-events: auto; /* Forzamos a las flechas a recibir clics siempre */
         }
         .btn-prev { left: 15px; }
         .btn-next { right: 15px; }
@@ -293,16 +295,16 @@
             display: block;
         }
 
-        /* --- NUEVO CSS: CAPA MODAL PARA VER FOTOS EN GRANDE --- */
+        /* Capa modal para ver fotos en grande */
         .lightbox-modal {
-            display: none; /* Oculto por defecto */
+            display: none; 
             position: fixed;
-            z-index: 200; /* Por encima de todo */
+            z-index: 200; 
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* Fondo oscuro elegante */
+            background-color: rgba(0, 0, 0, 0.9); 
             justify-content: center;
             align-items: center;
             opacity: 0;
@@ -380,10 +382,10 @@
 
         <div class="section-content" id="invitation-details">
             
-            <div class="carousel-container">
+            <div class="carousel-container" onclick="openActiveLightbox()">
                 <button class="carousel-btn btn-prev" onclick="changeSlide(-1); event.stopPropagation();">&#10094;</button>
-                <img src="imagenes/foto1.jpeg" alt="Foto 1" class="carousel-slide active" onclick="openLightbox(this.src)">
-                <img src="imagenes/foto2.jpeg" alt="Foto 2" class="carousel-slide" onclick="openLightbox(this.src)">
+                <img src="imagenes/foto1.jpeg" alt="Foto 1" class="carousel-slide active">
+                <img src="imagenes/foto2.jpeg" alt="Foto 2" class="carousel-slide">
                 <button class="carousel-btn btn-next" onclick="changeSlide(1); event.stopPropagation();">&#10095;</button>
             </div>
 
@@ -478,13 +480,17 @@
             changeSlide(1);
         }, 4000);
 
-        // --- NUEVA LÓGICA DE JAVASCRIPT PARA EL LIGHTBOX ---
+        // --- CORREGIDO: LÓGICA INTELIGENTE PARA EL LIGHTBOX ---
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
 
-        function openLightbox(imageSrc) {
-            lightboxImg.src = imageSrc;
-            lightbox.classList.add('show');
+        // Esta función detecta cuál es la foto activa en este preciso segundo
+        function openActiveLightbox() {
+            const activeSlide = document.querySelector('.carousel-slide.active');
+            if (activeSlide) {
+                lightboxImg.src = activeSlide.src;
+                lightbox.classList.add('show');
+            }
         }
 
         function closeLightbox() {
