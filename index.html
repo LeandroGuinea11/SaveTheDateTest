@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Save the Date - Jacqueline & Mario</title>
     
+    <link rel="icon" type="image/png" href="imagenes/footer-iniciales.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bodoni+Moda:ital,wght@1,400&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
@@ -46,6 +48,48 @@
                 max-height: 850px;
                 border-radius: 12px; /* Bordes redondeados estéticos en PC */
             }
+        }
+
+        /* --- BOTÓN DE MÚSICA FLOTANTE --- */
+        .music-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.08);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .music-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #ffffff;
+            transition: fill 0.3s ease;
+        }
+
+        /* Cambio de color estético cuando la música está pausada o en zona blanca */
+        .music-btn.black-style {
+            background: rgba(59, 34, 25, 0.15);
+            border: 1px solid rgba(59, 34, 25, 0.2);
+        }
+        .music-btn.black-style svg {
+            fill: #3b2219;
         }
 
         /* --- VISTA 1: EL SOBRE (ELEMENTOS CENTRADOS) --- */
@@ -200,11 +244,11 @@
             margin-top: 25px;
         }
 
-        /* SOLUCIÓN CSS: Altura elástica y colchón de seguridad al fondo para las iniciales */
+        /* Altura elástica y colchón de seguridad al fondo para las iniciales */
         .details-banner {
             width: 100%;
-            flex: 0 0 auto; /* Permite que mantenga su proporción idónea */
-            padding: 30px 20px 45px 20px; /* Incrementamos el colchón inferior de 20px a 45px */
+            flex: 0 0 auto; 
+            padding: 30px 20px 45px 20px; 
             text-align: center;
             background-color: #ffffff;
             display: flex;
@@ -239,7 +283,18 @@
 </head>
 <body>
 
+    <audio id="bg-music" src="musica/cancion.mp3" loop></audio>
+
     <div class="mobile-container" id="scroll-box">
+
+        <button class="music-btn" id="music-control" onclick="toggleMusic()" title="Reproducir/Pausar música">
+            <svg id="icon-playing" viewBox="0 0 24 24">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <svg id="icon-muted" viewBox="0 0 24 24" style="display: none;">
+                <path d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l4 4L19.73 21 21 19.73 4.27 3zM14 7h4V3h-6v5.18l2 2V7z"/>
+            </svg>
+        </button>
 
         <div class="section-envelope">
             <div>
@@ -284,15 +339,58 @@
     </div>
 
     <script>
-        // SOLUCIÓN JS: Forzar el scroll hasta el límite físico inferior del contenedor móvil
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-control');
+        const iconPlaying = document.getElementById('icon-playing');
+        const iconMuted = document.getElementById('icon-muted');
+        const scrollBox = document.getElementById('scroll-box');
+
+        // Forzar el scroll hasta el límite físico inferior del contenedor móvil e iniciar música
         function scrollToContent() {
-            const scrollBox = document.getElementById('scroll-box');
             if (scrollBox) {
                 scrollBox.scrollTo({
-                    top: scrollBox.scrollHeight, // Va al final absoluto del documento sin importar el dispositivo
+                    top: scrollBox.scrollHeight, 
                     behavior: 'smooth'
                 });
             }
+            
+            // Iniciar la reproducción musical al interactuar al abrir el sobre
+            playAudio();
+        }
+
+        // Función para dar play al audio de manera segura
+        function playAudio() {
+            audio.play().then(() => {
+                iconPlaying.style.display = 'block';
+                iconMuted.style.display = 'none';
+            }).catch(error => {
+                console.log("El navegador bloqueó el autoplay inicialmente hasta una interacción completa.");
+            });
+        }
+
+        // Función manual para el botón de pausar / mutear
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                iconPlaying.style.display = 'block';
+                iconMuted.style.display = 'none';
+            } else {
+                audio.pause();
+                iconPlaying.style.display = 'none';
+                iconMuted.style.display = 'block';
+            }
+        }
+
+        // Cambiar estilo visual del botón flotante según la sección del scroll
+        if (scrollBox) {
+            scrollBox.addEventListener('scroll', () => {
+                // Si el scroll baja más allá de la mitad de la pantalla 1, cambia de estilo para contrastar con el fondo blanco
+                if (scrollBox.scrollTop > (window.innerHeight / 2)) {
+                    musicBtn.classList.add('black-style');
+                } else {
+                    musicBtn.classList.remove('black-style');
+                }
+            });
         }
 
         // Lógica del carrusel
