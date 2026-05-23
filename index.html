@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save the Date - Jacqueline & Mario</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bodoni+Moda:ital,wght@1,400&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            background-color: #1a1a1a; /* Fondo exterior elegante en PC */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- CONTENEDOR INTELIGENTE --- */
+        .mobile-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            background-color: #3b2219; 
+            overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        /* Ajuste especial para pantallas grandes (Computadoras/Tablets) */
+        @media (min-height: 850px) and (min-width: 450px) {
+            .mobile-container {
+                max-height: 850px;
+                border-radius: 12px; /* Bordes redondeados estéticos en PC */
+            }
+        }
+
+        /* --- VISTA 1: EL SOBRE (ELEMENTOS CENTRADOS) --- */
+        .section-envelope {
+            width: 100%;
+            height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Alinea todo perfectamente al centro vertical */
+            align-items: center;
+            padding: 40px 24px;
+            text-align: center;
+            color: #ffffff;
+            background-color: #3b2219;
+            flex-shrink: 0; 
+            gap: 30px; /* Distribución de espacio uniforme entre elementos */
+        }
+
+        .text-top {
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .text-names {
+            font-family: 'Alex Brush', cursive;
+            font-size: 3.6rem;
+            font-weight: 400;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .envelope-wrapper {
+            width: 85%;
+            max-width: 290px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin: 10px 0;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.04);
+        }
+
+        .envelope-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .text-action {
+            font-family: 'Bodoni Moda', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            text-decoration: none;
+            margin-top: 5px;
+        }
+
+        /* --- VISTA 2: CONTENIDO PRINCIPAL --- */
+        .section-content {
+            width: 100%;
+            height: 100vh; /* Se mantiene pantalla completa limpia */
+            background-color: #ffffff;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column; 
+        }
+
+        /* Contenedor del Carrusel (Alineado al tope superior sin huecos) */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            flex: 1; /* Absorbe todo el espacio superior hasta la franja café */
+            background-color: #eaeaea;
+            overflow: hidden;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        /* Botones del Carrusel */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.4);
+            border: none;
+            color: #000000;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-prev { left: 15px; }
+        .btn-next { right: 15px; }
+
+        /* Franja café central con efecto sobrepuesto */
+        .date-banner {
+            width: 100%;
+            height: 150px;
+            background-color: #3b2219;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            position: relative;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .huge-date {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 3.5rem; 
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.23); 
+            position: absolute;
+            line-height: 1;
+            top: 22px;
+        }
+
+        .save-the-date-title {
+            font-family: 'Alex Brush', cursive;
+            font-size: 3.8rem;
+            z-index: 2;
+            font-weight: 400;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3); 
+            margin-top: 25px;
+        }
+
+        /* SOLUCIÓN CSS: Altura elástica y colchón de seguridad al fondo para las iniciales */
+        .details-banner {
+            width: 100%;
+            flex: 0 0 auto; /* Permite que mantenga su proporción idónea */
+            padding: 30px 20px 45px 20px; /* Incrementamos el colchón inferior de 20px a 45px */
+            text-align: center;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .details-text {
+            font-family: 'Poppins', sans-serif;
+            color: #3b2219;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .footer-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer-img {
+            max-width: 85px;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container" id="scroll-box">
+
+        <div class="section-envelope">
+            <div>
+                <p class="text-top">Has recibido un correo de</p>
+                <h1 class="text-names">Jacqueline & Mario</h1>
+            </div>
+            
+            <div class="envelope-wrapper" onclick="scrollToContent()">
+                <img src="imagenes/sobre.png" alt="Sobre" class="envelope-img">
+            </div>
+            
+            <a href="#" class="text-action" onclick="scrollToContent(); return false;">Haz clic para abrir el mensaje</a>
+        </div>
+
+        <div class="section-content" id="invitation-details">
+            
+            <div class="carousel-container">
+                <button class="carousel-btn btn-prev" onclick="changeSlide(-1)">&#10094;</button>
+                <img src="imagenes/foto1.jpeg" alt="Foto 1" class="carousel-slide active">
+                <img src="imagenes/foto2.jpeg" alt="Foto 2" class="carousel-slide">
+                <button class="carousel-btn btn-next" onclick="changeSlide(1)">&#10095;</button>
+            </div>
+
+            <div class="date-banner">
+                <div class="huge-date">14 . 11 . 2026</div>
+                <h2 class="save-the-date-title">Save the date</h2>
+            </div>
+
+            <div class="details-banner">
+                <div class="details-text">
+                    <p>Sábado 14 de noviembre de 2026</p>
+                    <p>4:00 pm / San Salvador</p>
+                </div>
+
+                <div class="footer-wrapper">
+                    <img src="imagenes/iniciales.png" alt="J&M" class="footer-img">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // SOLUCIÓN JS: Forzar el scroll hasta el límite físico inferior del contenedor móvil
+        function scrollToContent() {
+            const scrollBox = document.getElementById('scroll-box');
+            if (scrollBox) {
+                scrollBox.scrollTo({
+                    top: scrollBox.scrollHeight, // Va al final absoluto del documento sin importar el dispositivo
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Lógica del carrusel
+        let currentIdx = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+
+        function changeSlide(direction) {
+            slides[currentIdx].classList.remove('active');
+            currentIdx += direction;
+            
+            if (currentIdx >= slides.length) {
+                currentIdx = 0;
+            } else if (currentIdx < 0) {
+                currentIdx = slides.length - 1;
+            }
+            
+            slides[currentIdx].classList.add('active');
+        }
+
+        // Cambio automático cada 4 segundos
+        setInterval(() => {
+            changeSlide(1);
+        }, 4000);
+    </script>
+</body>
+</html>
